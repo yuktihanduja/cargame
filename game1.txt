@@ -1,0 +1,107 @@
+import pygame
+import time
+import messagedisplay
+import random
+import tkinter
+pygame.init()
+pygame.mixer.init()
+disp_width=800
+disp_height=600
+white=(255,255,255)
+black=(0,0,0)
+block_color=(155,206,227)
+win=pygame.display.set_mode((disp_width,disp_height))
+pygame.display.set_caption(' A bit racey')
+clock=pygame.time.Clock()
+
+
+display_picture=pygame.image.load('C:/Users/HP/AppData/Local/Programs/Python/Python36-32/Scripts/cars.png')
+def things(thingx,thingy,thingwidth,thingheight,color):
+    pygame.draw.rect(win,color,[thingx,thingy,thingwidth,thingheight])
+def mycar(x,y):
+    win.blit(display_picture,(x,y))
+def text_objects(text,font):
+    textSurface=font.render(text,True,black)
+    return textSurface,textSurface.get_rect()
+def message_display(text):
+    largeText=pygame.font.Font('freesansbold.ttf',95)
+    TextSurf,TextRect=text_objects(text,largeText)
+    TextRect.center=((disp_width/2),(disp_height/2))
+    win.blit(TextSurf,TextRect)
+    pygame.display.update()
+    time.sleep(2)
+    gameloop()
+def things_dodged(count):
+        font=pygame.font.SysFont(None,25)
+        text=font.render("Dodged: "+str(count),True,black)
+        win.blit(text,(0,0))
+    
+def crash():
+        message_display("YOU CRASHED")
+
+        
+
+def gameloop():
+    
+    x=(disp_width *0.47)
+    y=(disp_height * 0.66)
+    x_change=0
+    gameExit=False
+    thing_startx=random.randrange(0,disp_width)
+    thing_starty=-600
+    thing_w=100
+    thing_h=100
+    start_speed=4
+    dodged=0                                 
+  
+    while not gameExit:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+                
+
+                
+            if event.type==pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    x_change=-5
+                if event.key==pygame.K_RIGHT:
+                    x_change=5
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    
+                    x_change=0
+        if x<0 or x>disp_width-60:
+                crash()
+                
+        x+=x_change
+        
+                    
+          #(thingx,thingy,thingwidth,thingheight,color):  
+        win.fill(white)
+        things_dodged(dodged)
+        things(thing_startx,thing_starty,thing_w,thing_h,block_color)
+        thing_starty+=start_speed
+        if thing_starty>disp_height:
+            thing_starty=0-thing_h
+            thing_startx=random.randrange(0,disp_width)
+            dodged+=1
+            start_speed+=0.5
+            thing_w+=(dodged*1.2)
+        if y<thing_starty+thing_h:
+            if x>thing_startx and x<thing_startx + thing_w or x+61>thing_startx and x+61<thing_startx+thing_w:
+                crash()
+
+                
+            
+        mycar(x,y)
+        pygame.display.update()
+        clock.tick(90)
+
+gameloop()
+pygame.quit()
+quit()
+
+
+
+
